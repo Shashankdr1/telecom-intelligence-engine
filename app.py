@@ -296,9 +296,8 @@ if run_button:
                 "total_penalty_events": "Penalties",
             })
             styled = display.style\
-                .applymap(colour_quality,     subset=["Quality Score"])\
-                .applymap(colour_fulfillment, subset=["Fulfillment %"])\
-                .applymap(colour_cost,        subset=["Cost Index"])
+                .map(colour_sla,   subset=["SLA % (avg)"])\
+                .map(colour_delay, subset=["Delay Rate %"])
             st.dataframe(styled, use_container_width=True, hide_index=True)
 
         st.markdown("---")
@@ -320,9 +319,9 @@ if run_button:
                 "total_orders"        : "Orders (3mo)",
             })
             styled = display.style\
-                .applymap(colour_quality,     subset=["Quality Score"])\
-                .applymap(colour_fulfillment, subset=["Fulfillment %"])\
-                .applymap(colour_cost,        subset=["Cost Index"])
+                .map(colour_quality,     subset=["Quality Score"])\
+                .map(colour_fulfillment, subset=["Fulfillment %"])\
+                .map(colour_cost,        subset=["Cost Index"])
             st.dataframe(styled, use_container_width=True, hide_index=True)
 
 
