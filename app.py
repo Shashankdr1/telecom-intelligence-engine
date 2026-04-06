@@ -310,7 +310,6 @@ st.markdown("""
     padding: 4px !important;
     border: 1px solid #1e3a5f !important;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
