@@ -296,20 +296,6 @@ st.markdown("""
 .landing-card .lc-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem; }
 .landing-card .lc-body  { font-size: 0.83rem; color: #64748b; line-height: 1.6; }
 
-/* ── Always show sidebar toggle button ── */
-[data-testid="collapsedControl"] {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    top: 14px !important;
-    left: 14px !important;
-    z-index: 9999 !important;
-    background: #0a0f1e !important;
-    border-radius: 8px !important;
-    padding: 4px !important;
-    border: 1px solid #1e3a5f !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
@@ -669,6 +655,7 @@ if run_button:
 
 # ── LANDING ──────────────────────────────────
 else:
+    st.info("💡 Tip: Use the **>** arrow on the top left to open the sidebar if it's hidden.")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown("""
