@@ -310,6 +310,17 @@ section[data-testid="stSidebar"] { display: block !important; }
 .landing-card .lc-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem; }
 .landing-card .lc-body  { font-size: 0.83rem; color: #64748b; line-height: 1.6; }
 
+# Always reopen sidebar if closed
+if st.session_state.get("sidebar_closed"):
+    st.session_state.sidebar_closed = False
+    st.rerun()
+
+# Show reopen button only when sidebar is collapsed
+col_btn, col_empty = st.columns([1, 11])
+with col_btn:
+    if st.button("☰", help="Open sidebar"):
+        st.rerun()
+            
 </style>
 """, unsafe_allow_html=True)
 
