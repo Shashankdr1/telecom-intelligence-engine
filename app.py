@@ -37,8 +37,13 @@ def img_to_base64(path):
         return f"data:{mime};base64,{base64.b64encode(f.read()).decode()}"
 
 BASE  = os.path.dirname(os.path.abspath(__file__))
-gcx_b64     = img_to_base64(os.path.join(BASE, "assets", "GCX.webp"))
-prodapt_b64 = img_to_base64(os.path.join(BASE, "assets", "Prodapt.png"))
+
+try:
+    gcx_b64     = img_to_base64(os.path.join(BASE, "assets", "GCX.webp"))
+    prodapt_b64 = img_to_base64(os.path.join(BASE, "assets", "Prodapt.png"))
+except Exception:
+    gcx_b64     = ""
+    prodapt_b64 = ""
 
 
 # ─────────────────────────────────────────────
@@ -304,12 +309,14 @@ st.markdown("""
 # NAVBAR WITH LOGOS
 # ─────────────────────────────────────────────
 
+gcx_img     = f'<img src="{gcx_b64}" class="navbar-logo" alt="GCX"/><div class="navbar-divider"></div>' if gcx_b64 else '<span style="color:white;font-weight:700;font-size:1.1rem;">GCX</span><div class="navbar-divider"></div>'
+prodapt_img = f'<img src="{prodapt_b64}" class="navbar-logo" alt="Prodapt"/>' if prodapt_b64 else '<span style="color:#ff4444;font-weight:700;font-size:1.1rem;">Prodapt</span>'
+
 st.markdown(f"""
 <div class="navbar">
     <div class="navbar-left">
-        <img src="{gcx_b64}" class="navbar-logo" alt="GCX"/>
-        <div class="navbar-divider"></div>
-        <img src="{prodapt_b64}" class="navbar-logo" alt="Prodapt"/>
+        {gcx_img}
+        {prodapt_img}
         <div class="navbar-divider"></div>
         <span class="navbar-title">Carrier & Supplier Intelligence Engine</span>
     </div>
