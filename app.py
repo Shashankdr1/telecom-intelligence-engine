@@ -565,13 +565,6 @@ else:
             the most reliable and cost-effective partner combination for any
             service request — backed by AI scoring and risk intelligence.
         </p>
-        <div class="hero-stats">
-            <div><div class="hero-stat-value">15</div><div class="hero-stat-label">Carriers</div></div>
-            <div><div class="hero-stat-value">12</div><div class="hero-stat-label">Suppliers</div></div>
-            <div><div class="hero-stat-value">7</div><div class="hero-stat-label">Countries</div></div>
-            <div><div class="hero-stat-value">9</div><div class="hero-stat-label">Service Types</div></div>
-            <div><div class="hero-stat-value">12mo</div><div class="hero-stat-label">Data Window</div></div>
-        </div>
     </div>
     """, unsafe_allow_html=True)
 
