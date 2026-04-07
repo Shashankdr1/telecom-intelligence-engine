@@ -20,11 +20,24 @@ from utils.pdf_export import generate_pdf
 # ─────────────────────────────────────────────
 
 st.set_page_config(
-    page_title  = "Carrier & Supplier Intelligence · GCX × Prodapt",
-    page_icon   = "📡",
-    layout      = "wide",
+    page_title            = "Carrier & Supplier Intelligence · GCX × Prodapt",
+    page_icon             = "📡",
+    layout                = "wide",
     initial_sidebar_state = "expanded"
 )
+
+# Force sidebar open on every load via localStorage reset
+st.markdown("""
+<script>
+window.addEventListener('load', function() {
+    try {
+        Object.keys(localStorage).forEach(function(k) {
+            if (k.toLowerCase().includes('sidebar')) localStorage.removeItem(k);
+        });
+    } catch(e) {}
+});
+</script>
+""", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
@@ -32,19 +45,20 @@ st.set_page_config(
 # ─────────────────────────────────────────────
 
 def img_to_base64(path):
-    with open(path, "rb") as f:
-        ext  = path.split(".")[-1].replace("webp", "webp").replace("png", "png")
-        mime = "image/webp" if ext == "webp" else "image/png"
-        return f"data:{mime};base64,{base64.b64encode(f.read()).decode()}"
+    try:
+        with open(path, "rb") as f:
+            ext  = path.split(".")[-1]
+            mime = "image/webp" if ext == "webp" else "image/png"
+            return f"data:{mime};base64,{base64.b64encode(f.read()).decode()}"
+    except Exception:
+        return ""
 
-BASE  = os.path.dirname(os.path.abspath(__file__))
+BASE        = os.path.dirname(os.path.abspath(__file__))
+gcx_b64     = img_to_base64(os.path.join(BASE, "assets", "GCX.webp"))
+prodapt_b64 = img_to_base64(os.path.join(BASE, "assets", "Prodapt.png"))
 
-try:
-    gcx_b64     = img_to_base64(os.path.join(BASE, "assets", "GCX.webp"))
-    prodapt_b64 = img_to_base64(os.path.join(BASE, "assets", "Prodapt.png"))
-except Exception:
-    gcx_b64     = ""
-    prodapt_b64 = ""
+gcx_img     = f'<img src="{gcx_b64}" class="navbar-logo" alt="GCX"/>' if gcx_b64 else '<span style="color:white;font-weight:800;font-size:1.1rem;">GCX</span>'
+prodapt_img = f'<img src="{prodapt_b64}" class="navbar-logo" alt="Prodapt"/>' if prodapt_b64 else '<span style="color:#ff4444;font-weight:800;font-size:1.1rem;">Prodapt</span>'
 
 
 # ─────────────────────────────────────────────
@@ -54,19 +68,27 @@ except Exception:
 st.markdown("""
 <style>
 
-/* ── Hide Streamlit default elements ── */
-/* ── Hide Streamlit default elements ── */
+/* ── Hide default Streamlit chrome ── */
 #MainMenu { visibility: hidden; }
-footer { visibility: hidden; }
-header { visibility: hidden; }
-.block-container { padding-top: 1rem !important; }
+footer    { visibility: hidden; }
 
-/* ── Always show sidebar and toggle ── */
-[data-testid="stSidebar"] { display: block !important; visibility: visible !important; }
-[data-testid="collapsedControl"] { display: flex !important; visibility: visible !important; }
-section[data-testid="stSidebar"] { display: block !important; }
-            
-/* ── Top navbar ── */
+/* ── Sidebar always visible ── */
+[data-testid="stSidebar"] {
+    display: block !important;
+    visibility: visible !important;
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+}
+[data-testid="collapsedControl"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* ── Page padding ── */
+.block-container { padding-top: 0.5rem !important; }
+
+/* ── Navbar ── */
 .navbar {
     display: flex;
     align-items: center;
@@ -77,44 +99,20 @@ section[data-testid="stSidebar"] { display: block !important; }
     margin-bottom: 0;
     border-bottom: 2px solid #1e3a5f;
 }
-.navbar-left {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-.navbar-logo {
-    height: 36px;
-    object-fit: contain;
-}
-.navbar-divider {
-    width: 1px;
-    height: 32px;
-    background: #2a3f5f;
-}
-.navbar-title {
-    color: #e8f4fd;
-    font-size: 1.05rem;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-.navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+.navbar-left  { display: flex; align-items: center; gap: 20px; }
+.navbar-logo  { height: 36px; object-fit: contain; }
+.navbar-divider { width: 1px; height: 32px; background: #2a3f5f; }
+.navbar-title { color: #e8f4fd; font-size: 1.05rem; font-weight: 600; letter-spacing: 0.02em; }
+.navbar-right { display: flex; align-items: center; gap: 8px; }
 .navbar-badge {
-    background: #1e3a5f;
-    color: #7eb8e8;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    background: #1e3a5f; color: #7eb8e8;
+    font-size: 0.72rem; font-weight: 600;
+    padding: 0.25rem 0.75rem; border-radius: 20px;
     border: 1px solid #2a5a8f;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em; text-transform: uppercase;
 }
 
-/* ── Hero banner ── */
+/* ── Hero ── */
 .hero {
     background: linear-gradient(135deg, #0a0f1e 0%, #0d1f3c 40%, #1a3a6b 100%);
     border-radius: 12px;
@@ -127,46 +125,31 @@ section[data-testid="stSidebar"] { display: block !important; }
 .hero::before {
     content: "📡";
     position: absolute;
-    right: 2rem;
-    top: 50%;
+    right: 2rem; top: 50%;
     transform: translateY(-50%);
-    font-size: 6rem;
-    opacity: 0.07;
+    font-size: 6rem; opacity: 0.07;
 }
 .hero-tag {
     display: inline-block;
-    background: rgba(30, 90, 160, 0.3);
-    color: #7eb8e8;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.25rem 0.8rem;
-    border-radius: 20px;
+    background: rgba(30,90,160,0.3);
+    color: #7eb8e8; font-size: 0.75rem; font-weight: 700;
+    padding: 0.25rem 0.8rem; border-radius: 20px;
     border: 1px solid #2a5a8f;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: 0.06em; text-transform: uppercase;
     margin-bottom: 1rem;
 }
 .hero h1 {
-    color: #ffffff;
-    font-size: 2rem;
-    font-weight: 800;
-    margin: 0 0 0.5rem 0;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    color: #ffffff; font-size: 2rem; font-weight: 800;
+    margin: 0 0 0.5rem 0; line-height: 1.2; letter-spacing: -0.02em;
 }
 .hero h1 span { color: #4a9edd; }
 .hero p {
-    color: #7a9bbf;
-    font-size: 0.95rem;
-    margin: 0;
-    max-width: 600px;
-    line-height: 1.6;
+    color: #7a9bbf; font-size: 0.95rem;
+    margin: 0; max-width: 600px; line-height: 1.6;
 }
 .hero-stats {
-    display: flex;
-    gap: 2rem;
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
+    display: flex; gap: 2rem;
+    margin-top: 1.5rem; padding-top: 1.5rem;
     border-top: 1px solid #1e3a5f;
 }
 .hero-stat-value { color: #4a9edd; font-size: 1.4rem; font-weight: 800; }
@@ -174,82 +157,46 @@ section[data-testid="stSidebar"] { display: block !important; }
 
 /* ── Section title ── */
 .section-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #0d1f3c;
+    font-size: 1rem; font-weight: 700; color: #0d1f3c;
     border-left: 4px solid #1a6bbf;
-    padding-left: 0.7rem;
-    margin: 1.5rem 0 1rem 0;
+    padding-left: 0.7rem; margin: 1.5rem 0 1rem 0;
     letter-spacing: 0.01em;
 }
 
-/* ── Results header ── */
+/* ── Results bar ── */
 .results-bar {
-    background: #f0f6ff;
-    border: 1px solid #c8dff5;
-    border-radius: 10px;
-    padding: 0.9rem 1.4rem;
+    background: #f0f6ff; border: 1px solid #c8dff5;
+    border-radius: 10px; padding: 0.9rem 1.4rem;
     margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
 }
-.results-bar-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #0d1f3c;
-    margin-right: 0.5rem;
-}
+.results-bar-title { font-size: 1rem; font-weight: 700; color: #0d1f3c; }
 .pill {
-    display: inline-block;
-    padding: 0.25rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin: 0.1rem;
+    display: inline-block; padding: 0.25rem 0.8rem;
+    border-radius: 20px; font-size: 0.78rem; font-weight: 600; margin: 0.2rem;
 }
 .pill-blue   { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
-.pill-green  { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
 .pill-orange { background: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
 
 /* ── Rec cards ── */
 .rec-card {
-    border-radius: 12px;
-    padding: 1.3rem 1.5rem;
-    margin-bottom: 0.8rem;
-    border: 1px solid #e2e8f0;
-    transition: box-shadow 0.2s;
+    border-radius: 12px; padding: 1.3rem 1.5rem;
+    margin-bottom: 0.8rem; border: 1px solid #e2e8f0;
 }
-.rec-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-.rec-card.primary {
-    background: linear-gradient(135deg, #f0fff4, #e6ffed);
-    border-left: 5px solid #22c55e;
-}
-.rec-card.backup {
-    background: linear-gradient(135deg, #eff6ff, #dbeafe);
-    border-left: 5px solid #3b82f6;
-}
-.rec-card .tag {
-    font-size: 0.7rem; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
-}
+.rec-card.primary { background: linear-gradient(135deg,#f0fff4,#e6ffed); border-left: 5px solid #22c55e; }
+.rec-card.backup  { background: linear-gradient(135deg,#eff6ff,#dbeafe); border-left: 5px solid #3b82f6; }
+.rec-card .tag    { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
 .rec-card.primary .tag { color: #16a34a; }
 .rec-card.backup  .tag { color: #2563eb; }
 .rec-card .name      { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem; }
 .rec-card .score-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.6rem; }
 .rec-card .score-num { font-size: 1.4rem; font-weight: 800; color: #0f172a; }
-.rec-card .score-bar-bg { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; }
+.rec-card .score-bar-bg   { flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; }
 .rec-card.primary .score-bar-fill { height: 6px; background: #22c55e; border-radius: 3px; }
 .rec-card.backup  .score-bar-fill { height: 6px; background: #3b82f6; border-radius: 3px; }
 .rec-card .reasoning { font-size: 0.86rem; color: #475569; line-height: 1.6; }
 
 /* ── Alert cards ── */
-.alert-card {
-    border-radius: 10px; padding: 1rem 1.2rem;
-    margin-bottom: 0.6rem; border-left: 5px solid;
-}
+.alert-card { border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 0.6rem; border-left: 5px solid; }
 .alert-card.high   { background: #fff1f2; border-color: #f43f5e; }
 .alert-card.medium { background: #fffbeb; border-color: #f59e0b; }
 .alert-card.low    { background: #eff6ff; border-color: #3b82f6; }
@@ -260,9 +207,8 @@ section[data-testid="stSidebar"] { display: block !important; }
 .alert-card .ab { font-size: 0.83rem; color: #475569; line-height: 1.5; }
 
 /* ── Metric cards ── */
-.metric-row { display: flex; gap: 12px; margin-bottom: 1rem; }
 .metric-card {
-    flex: 1; background: #f8fafc; border: 1px solid #e2e8f0;
+    background: #f8fafc; border: 1px solid #e2e8f0;
     border-radius: 10px; padding: 1rem; text-align: center;
 }
 .metric-card .ml { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
@@ -271,71 +217,42 @@ section[data-testid="stSidebar"] { display: block !important; }
 .metric-card.medium-card .mv { color: #f59e0b; }
 .metric-card.low-card    .mv { color: #3b82f6; }
 
-/* ── Insight & action boxes ── */
+/* ── Insight & action ── */
 .insight-box {
-    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    background: linear-gradient(135deg,#eff6ff,#dbeafe);
     border: 1px solid #bfdbfe; border-radius: 10px;
     padding: 1.1rem 1.3rem; font-size: 0.9rem;
     color: #1e3a5f; line-height: 1.7; margin-bottom: 1rem;
 }
 .action-box {
-    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    background: linear-gradient(135deg,#fffbeb,#fef3c7);
     border: 1px solid #fde68a; border-radius: 10px;
     padding: 1.1rem 1.3rem; font-size: 0.9rem;
     color: #78350f; line-height: 1.7;
 }
 
-/* ── Sidebar ── */
-[data-testid="stSidebar"] {
-    background: #f8fafc;
-    border-right: 1px solid #e2e8f0;
-}
-.sidebar-section {
-    background: white; border: 1px solid #e2e8f0;
-    border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 0.8rem;
-}
-.sidebar-label {
-    font-size: 0.72rem; font-weight: 700;
-    color: #64748b; text-transform: uppercase;
-    letter-spacing: 0.08em; margin-bottom: 0.5rem;
-}
-
 /* ── Landing cards ── */
 .landing-card {
     background: white; border: 1px solid #e2e8f0;
-    border-radius: 12px; padding: 1.5rem;
-    text-align: center; height: 100%;
+    border-radius: 12px; padding: 1.5rem; text-align: center;
 }
-.landing-card .lc-icon { font-size: 2rem; margin-bottom: 0.7rem; }
+.landing-card .lc-icon  { font-size: 2rem; margin-bottom: 0.7rem; }
 .landing-card .lc-title { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem; }
 .landing-card .lc-body  { font-size: 0.83rem; color: #64748b; line-height: 1.6; }
 
-# Always reopen sidebar if closed
-if st.session_state.get("sidebar_closed"):
-    st.session_state.sidebar_closed = False
-    st.rerun()
-
-# Show reopen button only when sidebar is collapsed
-col_btn, col_empty = st.columns([1, 11])
-with col_btn:
-    if st.button("☰", help="Open sidebar"):
-        st.rerun()
-            
 </style>
 """, unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
-# NAVBAR WITH LOGOS
+# NAVBAR
 # ─────────────────────────────────────────────
-
-gcx_img     = f'<img src="{gcx_b64}" class="navbar-logo" alt="GCX"/><div class="navbar-divider"></div>' if gcx_b64 else '<span style="color:white;font-weight:700;font-size:1.1rem;">GCX</span><div class="navbar-divider"></div>'
-prodapt_img = f'<img src="{prodapt_b64}" class="navbar-logo" alt="Prodapt"/>' if prodapt_b64 else '<span style="color:#ff4444;font-weight:700;font-size:1.1rem;">Prodapt</span>'
 
 st.markdown(f"""
 <div class="navbar">
     <div class="navbar-left">
         {gcx_img}
+        <div class="navbar-divider"></div>
         {prodapt_img}
         <div class="navbar-divider"></div>
         <span class="navbar-title">Carrier & Supplier Intelligence Engine</span>
@@ -343,45 +260,6 @@ st.markdown(f"""
     <div class="navbar-right">
         <span class="navbar-badge">📡 Telecom</span>
         <span class="navbar-badge">🤖 AI Powered</span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-
-# ─────────────────────────────────────────────
-# HERO SECTION
-# ─────────────────────────────────────────────
-
-st.markdown("""
-<div class="hero">
-    <div class="hero-tag">AI-Driven Performance Intelligence</div>
-    <h1>Smart Partner Selection<br>for <span>Telecom Delivery</span></h1>
-    <p>
-        Analyse historical carrier and supplier performance to recommend
-        the most reliable and cost-effective partner combination for any
-        service request — backed by AI scoring and risk intelligence.
-    </p>
-    <div class="hero-stats">
-        <div>
-            <div class="hero-stat-value">15</div>
-            <div class="hero-stat-label">Carriers</div>
-        </div>
-        <div>
-            <div class="hero-stat-value">12</div>
-            <div class="hero-stat-label">Suppliers</div>
-        </div>
-        <div>
-            <div class="hero-stat-value">7</div>
-            <div class="hero-stat-label">Countries</div>
-        </div>
-        <div>
-            <div class="hero-stat-value">9</div>
-            <div class="hero-stat-label">Service Types</div>
-        </div>
-        <div>
-            <div class="hero-stat-value">12mo</div>
-            <div class="hero-stat-label">Data Window</div>
-        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -425,8 +303,9 @@ with st.sidebar:
     st.markdown("**2.** Click Analyse Partners")
     st.markdown("**3.** AI scores all eligible partners")
     st.markdown("**4.** Review scores, trends & alerts")
+    st.markdown("---")
+    st.caption("Data: Jan–Dec 2024 · 15 carriers · 12 suppliers · 7 countries")
 
-    # PDF download
     if "pdf_result" in st.session_state:
         st.markdown("---")
         st.markdown("#### 📄 Export")
@@ -508,10 +387,9 @@ def colour_cost(val):
 
 if run_button:
 
-    # Results bar
     st.markdown(f"""
     <div class="results-bar">
-        <span class="results-bar-title">📊 Analysis Results</span>
+        <span class="results-bar-title">📊 Analysis Results &nbsp;</span>
         <span class="pill pill-blue">🌍 {country}</span>
         <span class="pill pill-blue">🔧 {service_type}</span>
         <span class="pill pill-orange">📅 {expected_days} days expected</span>
@@ -525,7 +403,6 @@ if run_button:
         "📈 Trends",
         "🔍 Raw Data",
     ])
-
 
     # ── TAB 1 ───────────────────────────────────
     with tab1:
@@ -555,7 +432,6 @@ if run_button:
 
             st.markdown('<div class="section-title">📋 Action Plan</div>', unsafe_allow_html=True)
             st.markdown(f'<div class="action-box">{result["action_plan"]}</div>', unsafe_allow_html=True)
-
 
     # ── TAB 2 ───────────────────────────────────
     with tab2:
@@ -605,7 +481,6 @@ if run_button:
                 .map(colour_cost,        subset=["Cost Index"])
             st.dataframe(styled, use_container_width=True, hide_index=True)
 
-
     # ── TAB 3 ───────────────────────────────────
     with tab3:
         st.markdown('<div class="section-title">🚨 Risk Alerts</div>', unsafe_allow_html=True)
@@ -626,7 +501,6 @@ if run_button:
             st.markdown("")
             for alert in alerts:
                 render_alert_card(alert)
-
 
     # ── TAB 4 ───────────────────────────────────
     with tab4:
@@ -670,7 +544,6 @@ if run_button:
                 st.markdown("**Cost Index — lower is better**")
                 st.line_chart(supplier_trends.pivot_table(index="month", columns="supplier_name", values="cost_index"), use_container_width=True)
 
-
     # ── TAB 5 ───────────────────────────────────
     with tab5:
         st.markdown('<div class="section-title">📂 Raw Carrier Data — Last 3 Months</div>', unsafe_allow_html=True)
@@ -682,14 +555,34 @@ if run_button:
 
 # ── LANDING ──────────────────────────────────
 else:
-    st.info("💡 Tip: Use the **>** arrow on the top left to open the sidebar if it's hidden.")
+    # Hero
+    st.markdown("""
+    <div class="hero">
+        <div class="hero-tag">AI-Driven Performance Intelligence</div>
+        <h1>Smart Partner Selection<br>for <span>Telecom Delivery</span></h1>
+        <p>
+            Analyse historical carrier and supplier performance to recommend
+            the most reliable and cost-effective partner combination for any
+            service request — backed by AI scoring and risk intelligence.
+        </p>
+        <div class="hero-stats">
+            <div><div class="hero-stat-value">15</div><div class="hero-stat-label">Carriers</div></div>
+            <div><div class="hero-stat-value">12</div><div class="hero-stat-label">Suppliers</div></div>
+            <div><div class="hero-stat-value">7</div><div class="hero-stat-label">Countries</div></div>
+            <div><div class="hero-stat-value">9</div><div class="hero-stat-label">Service Types</div></div>
+            <div><div class="hero-stat-value">12mo</div><div class="hero-stat-label">Data Window</div></div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("")
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown("""
         <div class="landing-card">
             <div class="lc-icon">🌍</div>
             <div class="lc-title">Step 1 — Select Requirement</div>
-            <div class="lc-body">Choose the country, service type and customer expected delivery deadline from the sidebar.</div>
+            <div class="lc-body">Choose the country, service type and customer expected delivery deadline from the sidebar on the left.</div>
         </div>
         """, unsafe_allow_html=True)
     with col2:
@@ -708,3 +601,6 @@ else:
             <div class="lc-body">Review AI recommendations, risk alerts, trend charts and download a PDF report for your client.</div>
         </div>
         """, unsafe_allow_html=True)
+
+    st.markdown("")
+    st.info("💡 Use the **arrow (›)** on the top left to reopen the sidebar if it's hidden.")
