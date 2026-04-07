@@ -55,9 +55,17 @@ st.markdown("""
 <style>
 
 /* ── Hide Streamlit default elements ── */
-#MainMenu, footer, header { visibility: hidden; }
+/* ── Hide Streamlit default elements ── */
+#MainMenu { visibility: hidden; }
+footer { visibility: hidden; }
+header { visibility: hidden; }
 .block-container { padding-top: 1rem !important; }
 
+/* ── Always show sidebar and toggle ── */
+[data-testid="stSidebar"] { display: block !important; visibility: visible !important; }
+[data-testid="collapsedControl"] { display: flex !important; visibility: visible !important; }
+section[data-testid="stSidebar"] { display: block !important; }
+            
 /* ── Top navbar ── */
 .navbar {
     display: flex;
