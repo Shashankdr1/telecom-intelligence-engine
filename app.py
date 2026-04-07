@@ -20,9 +20,10 @@ from utils.pdf_export import generate_pdf
 # ─────────────────────────────────────────────
 
 st.set_page_config(
-    page_title = "Carrier & Supplier Intelligence · GCX × Prodapt",
-    page_icon  = "📡",
-    layout     = "wide"
+    page_title  = "Carrier & Supplier Intelligence · GCX × Prodapt",
+    page_icon   = "📡",
+    layout      = "wide",
+    initial_sidebar_state = "expanded"
 )
 
 
