@@ -603,4 +603,3 @@ else:
         """, unsafe_allow_html=True)
 
     st.markdown("")
-    st.info("💡 Use the **arrow (›)** on the top left to reopen the sidebar if it's hidden.")
