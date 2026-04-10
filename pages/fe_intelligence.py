@@ -211,17 +211,7 @@ with st.sidebar:
     country      = st.selectbox("🌍 Country",    get_fe_countries())
     vendor       = st.selectbox("🏢 FE Vendor",  get_fe_vendors())
 
-    st.markdown("#### 📅 Expected Completion")
-    quick_options = {"15 days": 15, "30 days": 30, "60 days": 60, "90 days": 90, "Custom date": None}
-    quick_select  = st.selectbox("Quick Select", list(quick_options.keys()))
-
-    if quick_select == "Custom date":
-        min_date      = datetime.date.today() + datetime.timedelta(days=1)
-        custom_date   = st.date_input("Pick a date", min_value=min_date, value=min_date)
-        expected_days = (custom_date - datetime.date.today()).days
-        st.caption(f"That is **{expected_days} days** from today.")
-    else:
-        expected_days = quick_options[quick_select]
+    
 
     st.markdown("")
     run_button = st.button("🔍 Analyse FE Performance", use_container_width=True, type="primary")
@@ -295,7 +285,6 @@ if run_button:
         <strong>📊 FE Analysis Results</strong> &nbsp;
         <span class="pill pill-purple">🌍 {country}</span>
         <span class="pill pill-purple">🏢 {vendor}</span>
-        <span class="pill pill-orange">📅 {expected_days} days expected</span>
     </div>
     """, unsafe_allow_html=True)
 
