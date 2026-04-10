@@ -57,9 +57,8 @@ BASE        = os.path.dirname(os.path.abspath(__file__))
 gcx_b64     = img_to_base64(os.path.join(BASE, "assets", "GCX.webp"))
 prodapt_b64 = img_to_base64(os.path.join(BASE, "assets", "Prodapt.png"))
 
-gcx_img     = f'<img src="{gcx_b64}" class="navbar-logo" alt="GCX"/>' if gcx_b64 else '<span style="color:white;font-weight:800;font-size:1.1rem;">GCX</span>'
-prodapt_img = f'<img src="{prodapt_b64}" class="navbar-logo" alt="Prodapt"/>' if prodapt_b64 else '<span style="color:#ff4444;font-weight:800;font-size:1.1rem;">Prodapt</span>'
-
+gcx_img     = f'<img src="{gcx_b64}" class="navbar-logo-gcx" alt="GCX"/>' if gcx_b64 else '<span style="color:white;font-weight:800;font-size:1.1rem;">GCX</span>'
+prodapt_img = f'<img src="{prodapt_b64}" class="navbar-logo-prodapt" alt="Prodapt"/>' if prodapt_b64 else '<span style="color:#ff4444;font-weight:800;font-size:1.1rem;">Prodapt</span>'
 
 # ─────────────────────────────────────────────
 # CUSTOM CSS
@@ -94,13 +93,15 @@ footer    { visibility: hidden; }
     align-items: center;
     justify-content: space-between;
     background: #0a0f1e;
-    padding: 0.7rem 2rem;
-    border-radius: 0 0 12px 12px;
-    margin-bottom: 0;
-    border-bottom: 2px solid #1e3a5f;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin: 0.5rem 0 0 0;
+    border: 1px solid #1e3a5f;
 }
 .navbar-left  { display: flex; align-items: center; gap: 20px; }
-.navbar-logo  { height: 36px; object-fit: contain; }
+.navbar-logo        { height: 32px; object-fit: contain; border-radius: 6px; }
+.navbar-logo-gcx    { height: 32px; object-fit: contain; }
+.navbar-logo-prodapt{ height: 28px; object-fit: contain; background: white; border-radius: 5px; padding: 2px 8px; }
 .navbar-divider { width: 1px; height: 32px; background: #2a3f5f; }
 .navbar-title { color: #e8f4fd; font-size: 1.05rem; font-weight: 600; letter-spacing: 0.02em; }
 .navbar-right { display: flex; align-items: center; gap: 8px; }
