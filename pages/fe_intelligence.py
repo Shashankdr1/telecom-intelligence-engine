@@ -210,6 +210,7 @@ with st.sidebar:
 
     country      = st.selectbox("🌍 Country",    get_fe_countries())
     vendor       = st.selectbox("🏢 FE Vendor",  get_fe_vendors())
+    expected_days = 7
 
     
 
